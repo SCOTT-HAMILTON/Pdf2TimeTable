@@ -5,7 +5,7 @@ setup(
     version='0.1',
     packages=find_packages(),
     include_package_data=True,
-    py_modules = [ 'timetableparser', 'cli' ],
+    py_modules = [ 'timetableparser', 'timetablewriter', 'cli' ],
 
     install_requires=['tabula-py', 'PyPDF2', 'pandas', 'numpy', 'Click'],
 
