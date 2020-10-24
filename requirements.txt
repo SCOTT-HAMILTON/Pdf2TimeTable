@@ -1,3 +1,4 @@
 click
 numpy
 pandas
+openpyxl>=3.0.3

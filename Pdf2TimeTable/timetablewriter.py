@@ -15,9 +15,8 @@ class TimeTableWriter():
         gaps = [(interval[1][1],interval[3][1]) for interval in array]
         return gaps
 
-    def write_excel(self, name, subjects_per_intervals_per_days_week_a, subjects_per_intervals_per_days_week_b, output_file):
+    def prepare_data(self, subjects_per_intervals_per_days_week_a, subjects_per_intervals_per_days_week_b):
         data = {'Week A':{},'Week B':{}}
-        max_gaps_count = 0
         for week,subjects_per_intervals_per_days in zip(data.keys(),
             [subjects_per_intervals_per_days_week_a, subjects_per_intervals_per_days_week_b]):
             for day,intervals in subjects_per_intervals_per_days.items():
@@ -27,17 +26,24 @@ class TimeTableWriter():
                 if self.debug:
                     print()
                     print(day, start, end, gaps)
-                max_gaps_count = max(len(gaps), max_gaps_count)
 
                 data[week][day] = (start,end,gaps)
         if self.debug:
             pprint(data)
-        array = np.ndarray(shape=(max_gaps_count+4, (len(data['Week A'].keys())+len(data['Week B'].keys()))*2), dtype="U16")
+        return data
+
+    def write_prepared_data_to_excel(self, name, prepared_data, output_file):
+        max_gaps_count = 0
+        for _,data in prepared_data.items():
+            for _,day in data.items():
+                max_gaps_count = max(max_gaps_count, len(day[2]))
+
+        array = np.ndarray(shape=(max_gaps_count+4, (len(prepared_data['Week A'].keys())+len(prepared_data['Week B'].keys()))*2), dtype="U16")
         array.fill('')
         array[0][0] = name
         currentColumn = 0
-        for week_str,week_key in zip(['Semaine A', 'Semaine B'], data.keys()):
-            for day,day_data in data[week_key].items():
+        for week_str,week_key in zip(['Semaine A', 'Semaine B'], prepared_data.keys()):
+            for day,day_data in prepared_data[week_key].items():
                 array[1][currentColumn] = day+' '+week_str
                 array[2][currentColumn] = day_data[0]
                 for index,gap in enumerate(day_data[2]):
@@ -50,6 +56,10 @@ class TimeTableWriter():
             pd_df = DataFrame(array)
             if self.debug: print(pd_df)
             pd_df.to_excel(writer, sheet_name="Sheet 1", index=False, header=False)
+
+    def write_excel(self, name, subjects_per_intervals_per_days_week_a, subjects_per_intervals_per_days_week_b, output_file):
+        prepared_data = self.prepare_data(subjects_per_intervals_per_days_week_a, subjects_per_intervals_per_days_week_b)
+        self.write_prepared_data_to_excel(name, prepared_data, output_file)
 
 
 
