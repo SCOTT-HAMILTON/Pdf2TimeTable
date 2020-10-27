@@ -2,6 +2,15 @@ import numpy as np
 from pandas import ExcelWriter, DataFrame
 from pprint import pprint
 
+daysOfWeek = [
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi",
+        "Dimanche"]
+
 class TimeTableWriter():
     def __init__(self, debug):
         self.debug = debug
@@ -38,12 +47,30 @@ class TimeTableWriter():
             for _,day in data.items():
                 max_gaps_count = max(max_gaps_count, len(day[2]))
 
-        array = np.ndarray(shape=(max_gaps_count+4, (len(prepared_data['Week A'].keys())+len(prepared_data['Week B'].keys()))*2), dtype="U18")
+        array = np.ndarray(shape=(max_gaps_count+4, len(daysOfWeek)*4), dtype="U18")
         array.fill('')
         array[0][0] = name
         currentColumn = 0
         for week_str,week_key in zip(['Semaine A', 'Semaine B'], prepared_data.keys()):
+            lastDayOfWeekIndex = -1
             for day,day_data in prepared_data[week_key].items():
+                if not day in daysOfWeek:
+                    print("Day "+day+" doesn't exist..., anyway")
+                    continue
+                else:
+                    currentDayOfWeekIndex = daysOfWeek.index(day)
+                    if currentDayOfWeekIndex < lastDayOfWeekIndex:
+                        print("Please order by date")
+                        break
+                    while lastDayOfWeekIndex+1 < currentDayOfWeekIndex:
+                        currentDay = daysOfWeek[lastDayOfWeekIndex+1]
+                        print("Adding "+currentDay)
+                        array[1][currentColumn] = currentDay+' '+week_str
+                        array[2][currentColumn] = "0h00"
+                        array[3][currentColumn] = "0h00"
+                        lastDayOfWeekIndex += 1
+                        currentColumn += 2
+                    lastDayOfWeekIndex = currentDayOfWeekIndex
                 array[1][currentColumn] = day+' '+week_str
                 array[2][currentColumn] = day_data[0]
                 for index,gap in enumerate(day_data[2]):
