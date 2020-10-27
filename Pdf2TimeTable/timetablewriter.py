@@ -38,7 +38,7 @@ class TimeTableWriter():
             for _,day in data.items():
                 max_gaps_count = max(max_gaps_count, len(day[2]))
 
-        array = np.ndarray(shape=(max_gaps_count+4, (len(prepared_data['Week A'].keys())+len(prepared_data['Week B'].keys()))*2), dtype="U16")
+        array = np.ndarray(shape=(max_gaps_count+4, (len(prepared_data['Week A'].keys())+len(prepared_data['Week B'].keys()))*2), dtype="U18")
         array.fill('')
         array[0][0] = name
         currentColumn = 0

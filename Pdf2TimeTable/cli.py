@@ -6,6 +6,7 @@ from enum import Enum
 from json import load
 from os import environ
 from os.path import isfile
+from pprint import pprint
 
 class Method(Enum):
     JSON2TIMETABLE  = 1
@@ -210,6 +211,8 @@ def cli(method, debug):
         prepared_data = {
                 'Week A':weekA,
                 'Week B':weekB}
+        if debug:
+            pprint(prepared_data)
         writer.write_prepared_data_to_excel(name, prepared_data, method.output_timetable)
         print("output file is `"+method.output_timetable+"`")
     elif method.method == Method.MAKE_CSV:

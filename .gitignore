@@ -1,4 +1,6 @@
 Pdf2TimeTable/test
+Pdf2TimeTable/test?/*.json
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
